@@ -16,6 +16,8 @@ import com.nosari20.bleconnect.bluetooth.BLEService;
 import com.nosari20.bleconnect.bluetooth.BLEService.BLEServiceHandler;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ConsoleViewModel extends ViewModel {
 
@@ -65,16 +67,16 @@ public class ConsoleViewModel extends ViewModel {
                 }
                 Log.v(TAG, output);
                 mConsoleOutput.postValue(mConsoleOutput.getValue() + "Connected");
+
+                boolean read = mBLEService.listen("0000dfb0-0000-1000-8000-00805f9b34fb", "0000dfb1-0000-1000-8000-00805f9b34fb");
+                Log.v(TAG, "read: " + read);
+
             }
 
             @Override
-            public void onRead(boolean success, String value, BluetoothGattCharacteristic characteristic, BluetoothGatt gatt) {
-                Log.v(TAG, "Read success: "+success);
-                if(success) {
-                    mConsoleOutput.postValue(mConsoleOutput.getValue() + "\nRead value: " + value);
-                }else{
-                    mConsoleOutput.postValue(mConsoleOutput.getValue() + "\nRead failed");
-                }
+            public void onChanged(String value, BluetoothGattCharacteristic characteristic, BluetoothGatt gatt) {
+                Log.v(TAG, "Read success: "+value);
+                mConsoleOutput.postValue(mConsoleOutput.getValue() + "\nRead value: " + value);
             }
 
             @Override
@@ -97,8 +99,12 @@ public class ConsoleViewModel extends ViewModel {
 
     public void send(String value) {
         Log.v(TAG, "Sending '" + value +"'");
-        mBLEService.write("0000dfb0-0000-1000-8000-00805f9b34fb", "0000dfb1-0000-1000-8000-00805f9b34fb", value);
+        mBLEService.write("0000dfb0-0000-1000-8000-00805f9b34fb", "0000dfb1-0000-1000-8000-00805f9b34fb", value+'\n');
         //mBLEService.write("0000dfb0-0000-1000-8000-00805f9b34fb", "0000dfb2-0000-1000-8000-00805f9b34fb", value);
+
+
+        boolean read = mBLEService.listen("0000dfb0-0000-1000-8000-00805f9b34fb", "0000dfb1-0000-1000-8000-00805f9b34fb");
+        Log.v(TAG, "read: " + read);
 
     }
 }

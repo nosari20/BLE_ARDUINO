@@ -17,6 +17,8 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,23 +153,16 @@ public class BLEService {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
+
             Log.v(TAG, "Service '"+gatt+"' discovered");
             List<BluetoothGattService> services = gatt.getServices();
             for (BluetoothGattService service: services) {
                 Log.i(TAG,"onServicesDiscovered: "+service.getUuid());
             }
-            for (BLEServiceHandler handler: mHandlers) {
-                handler.onServicesDiscovered(services, gatt);
-            }
             mServices = services;
             mGatt = gatt;
-        }
-
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            super.onCharacteristicRead(gatt, characteristic, status);
             for (BLEServiceHandler handler: mHandlers) {
-                handler.onRead(status == BluetoothGatt.GATT_SUCCESS, new String(characteristic.getValue()), characteristic, gatt);
+                handler.onServicesDiscovered(services, gatt);
             }
 
         }
@@ -175,8 +170,20 @@ public class BLEService {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
+            String value = new String(characteristic.getValue());
+            value = value.substring(0, value.length() - 1);
+            Log.i(TAG,"onCharacteristicWrite: "+value);
             for (BLEServiceHandler handler: mHandlers) {
-                handler.onWrite(status == BluetoothGatt.GATT_SUCCESS, new String(characteristic.getValue()), characteristic, gatt);
+                handler.onWrite(status == BluetoothGatt.GATT_SUCCESS, value, characteristic, gatt);
+            }
+        }
+
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            super.onCharacteristicChanged(gatt, characteristic);
+            Log.i(TAG,"onCharacteristicWrite: "+new String(characteristic.getValue()));
+            for (BLEServiceHandler handler: mHandlers) {
+                handler.onChanged(new String(characteristic.getValue()), characteristic, gatt);
             }
         }
     };
@@ -191,15 +198,14 @@ public class BLEService {
             mConnectedGatt.disconnect();
     }
 
-    public boolean read(String serviceUUID, String characteristicUUID){
-        if(!mConnected || mServices == null) return false;
+    public boolean listen(String serviceUUID, String characteristicUUID){
+        if(!mConnected || mServices == null || mGatt == null) return false;
         for (BluetoothGattService service: mServices  ) {
             if(service.getUuid().toString().equals(serviceUUID)){
                 for (BluetoothGattCharacteristic characteristic: service.getCharacteristics() ) {
                     if(characteristic.getUuid().toString().equals(characteristicUUID)){
-                        if(((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ) != 0)){
-                            mGatt.readCharacteristic(characteristic);
-                            return true;
+                        if(((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0)){
+                            return mGatt.setCharacteristicNotification(characteristic,true);
                         }
                         break;
                     }
@@ -218,8 +224,7 @@ public class BLEService {
                     if(characteristic.getUuid().toString().equals(characteristicUUID)){
                         if(((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0)){
                             characteristic.setValue(value);
-                            mGatt.writeCharacteristic(characteristic);
-                            return true;
+                            return mGatt.writeCharacteristic(characteristic);
                         }
                         break;
                     }
@@ -237,7 +242,7 @@ public class BLEService {
         public abstract void onConnect();
         public abstract void onDisconnect();
         public abstract void onServicesDiscovered(List<BluetoothGattService> services, BluetoothGatt gatt);
-        public abstract void onRead(boolean success, String value, BluetoothGattCharacteristic characteristic, BluetoothGatt gatt);
+        public abstract void onChanged(String value, BluetoothGattCharacteristic characteristic, BluetoothGatt gatt);
         public abstract void onWrite(boolean success, String value, BluetoothGattCharacteristic characteristic, BluetoothGatt gatt);
     }
 

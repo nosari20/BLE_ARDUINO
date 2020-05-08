@@ -102,7 +102,7 @@ public class HomeViewModel extends ViewModel {
             }
 
             @Override
-            public void onRead(boolean success, String value, BluetoothGattCharacteristic characteristic, BluetoothGatt gatt) {
+            public void onChanged(String value, BluetoothGattCharacteristic characteristic, BluetoothGatt gatt) {
 
             }
 
