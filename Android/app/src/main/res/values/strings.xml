@@ -9,14 +9,20 @@
 
     <!-- Menu -->
     <string name="menu_home">Home</string>
+    <string name="menu_controller">Controller</string>
     <string name="menu_console">Console</string>
-    <string name="menu_slideshow">Slideshow</string>
 
-    <string name="home_second">Home Second</string>
 
 
 
     <!-- Home  -->
     <string name="bluetooth_state">Bluetooth</string>
     <string name="bluetooth_ble_not_supported">BLE not supported</string>
+
+
+    <!-- Controller -->
+    <string name="joystick_stick_color">Bluetooth</string>
+    <string name="joystick_main_circle_color">BLE not supported</string>
+    <string name="joystick_second_circle_color">BLE not supported</string>
+
 </resources>

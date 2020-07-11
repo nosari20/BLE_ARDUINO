@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="JoystickWidget">
+        <attr name="stick_color" format="string" />
+        <attr name="main_circle_color" format="string" />
+        <attr name="second_circle_color" format="string" />
+    </declare-styleable>
+
+</resources>

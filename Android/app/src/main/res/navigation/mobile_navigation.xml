@@ -24,8 +24,8 @@
         tools:layout="@layout/fragment_console" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.nosari20.bleconnect.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_controller"
+        android:name="com.nosari20.bleconnect.ui.controller.ControllerFragment"
+        android:label="@string/menu_controller"
+        tools:layout="@layout/fragment_controller" />
 </navigation>
