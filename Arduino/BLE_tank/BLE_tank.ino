@@ -7,10 +7,10 @@
 
 #include <AFMotor.h>
 
-AF_DCMotor MotorR1(2);
-AF_DCMotor MotorR2(1);
-AF_DCMotor MotorL1(3);
-AF_DCMotor MotorL2(4);
+AF_DCMotor MotorR1(4);
+AF_DCMotor MotorR2(3);
+AF_DCMotor MotorL1(1);
+AF_DCMotor MotorL2(2);
 
 
 
